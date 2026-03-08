@@ -56,9 +56,9 @@
     // Definição das paletas de cor
     const colorPalettes = {
         'tecnico': { name: 'Técnico', base: '#009de0', hover: '#007dba' },
-        'gay':     { name: 'Arco-Íris', base: '#d100c8', hover: '#ff007f' },
         'red':     { name: 'Vermelho', base: '#e63946', hover: '#d62828' },
-        'green':   { name: 'Verde', base: '#2a9d8f', hover: '#21867a' }
+        'green':   { name: 'Verde', base: '#2a9d8f', hover: '#21867a' },
+        'gay':     { name: 'jeb_', base: '#d100c8', hover: '#ff007f' }
     };
 
     function applyColor(colorKey) {
