@@ -1,0 +1,208 @@
+// ==UserScript==
+// @name         FénixEdu Dark Mode Pro
+// @namespace    http://tampermonkey.net/
+// @version      1.5
+// @description  Tema escuro e melhorias tipográficas para o FénixEdu (Técnico Lisboa)
+// @author       Gemini
+// @match        *://fenix.tecnico.ulisboa.pt/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    const style = document.createElement('style');
+    style.id = 'fenix-dark-mode-style';
+
+    style.innerHTML = `
+        /* Importar Fonte do Google (Apenas Source Sans 3) */
+        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&display=swap');
+
+        /* Importar Fonte Klavika do GitHub */
+        @font-face {
+            font-family: 'Klavika';
+            src: url('https://raw.githubusercontent.com/josan07/fonts/main/klavika-bold.otf') format('opentype');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        :root {
+            --bg-body: #121212;     /* Fundo geral da página (quase preto) */
+            --bg-header: #1a1a1a;   /* Cor da barra superior */
+            --bg-content: #242424;  /* Cinzento mais claro para a zona central */
+            --bg-hover: #333333;
+            --text-main: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --accent-blue: #58a6ff;
+            --accent-blue-hover: #79b8ff;
+            --border-color: #3d3d3d;
+        }
+
+        /* ---------------------------------------------------
+           TIPOGRAFIA GLOBAL
+        --------------------------------------------------- */
+        body, html, p, span, div, a, li, td, th, small {
+            font-family: 'Source Sans 3', sans-serif !important;
+            font-size: 15px;
+        }
+
+        /* ---------------------------------------------------
+           TÍTULOS E DESTAQUES (KLAVIKA)
+        --------------------------------------------------- */
+        h1, h2, h3, h4, h5, h6, .modal-title {
+            font-family: 'Klavika', sans-serif !important;
+            font-weight: bold !important;
+            color: var(--text-main) !important;
+        }
+
+        /* Título gigante da Cadeira ("Física 1 com Laboratório") */
+        .site-header, .site-header a:first-child {
+            font-family: 'Klavika', sans-serif !important;
+            font-size: 38px !important;  /* Ligeiramente maior para compensar a métrica da fonte */
+            font-weight: bold !important;
+            line-height: 1.2 !important;
+        }
+
+        /* Corrigir o tamanho do link "+ Info" para não ficar gigante */
+        .site-header a[data-toggle="modal"] {
+            font-family: 'Source Sans 3', sans-serif !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            vertical-align: middle;
+        }
+
+        /* Títulos dos Anúncios */
+        h5, h5 a {
+            font-family: 'Klavika', sans-serif !important;
+            font-weight: bold !important;
+            font-size: 20px !important; /* Ligeiro aumento para dar destaque à Klavika */
+        }
+
+        /* ---------------------------------------------------
+           CORES E ESTRUTURA GLOBAL
+        --------------------------------------------------- */
+        body, html {
+            background-color: var(--bg-body) !important;
+            color: var(--text-main) !important;
+        }
+
+        /* Correção da Barra de Topo (Retângulo Contínuo) */
+        #headcounter {
+            background-color: var(--bg-header) !important;
+            width: 100% !important;
+            max-width: none !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            margin: 0 !important;
+            padding-bottom: 0 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        /* Parte Central (Cinzento destacado) */
+        #content-block, .main-content {
+            background-color: var(--bg-content) !important;
+            padding: 25px !important;
+            border-radius: 8px !important;
+            border: 1px solid var(--border-color) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 30px !important;
+        }
+
+        /* Barra Lateral Direita (Fundo escuro, igual ao body) */
+        nav.col-sm-3, .sidebar-module {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Outros painéis laterais e janelas modais */
+        .panel, .well, .modal-content {
+            background-color: var(--bg-content) !important;
+            color: var(--text-main) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        /* ---------------------------------------------------
+           LINKS E MENUS
+        --------------------------------------------------- */
+        a {
+            color: var(--accent-blue) !important;
+            transition: color 0.2s ease-in-out;
+        }
+        a:hover {
+            color: var(--accent-blue-hover) !important;
+            text-decoration: underline !important;
+        }
+
+        /* Menus Laterais (Nav Pills) */
+        .nav-pills > li > a {
+            color: var(--text-main) !important;
+            background-color: transparent !important;
+            border-radius: 6px !important;
+        }
+        .nav-pills > li > a:hover {
+            background-color: var(--bg-hover) !important;
+        }
+        .nav-pills > li.active > a,
+        .nav-pills > li.active > a:hover,
+        .nav-pills > li.active > a:focus {
+            background-color: #0059b3 !important;
+            color: #ffffff !important;
+        }
+
+        /* Separadores (Linhas) */
+        hr, footer {
+            border-top-color: var(--border-color) !important;
+        }
+
+        /* Textos secundários (Datas, Emails) */
+        .small, small, p[style*="color:#888"], span[style*="color:#888"], span[style*="color:#ddd"] {
+            color: var(--text-muted) !important;
+        }
+
+        /* Badges (ex: Responsável) */
+        .badge {
+            background-color: #444 !important;
+            color: #e0e0e0 !important;
+            font-family: 'Source Sans 3', sans-serif !important;
+            font-weight: 600 !important;
+        }
+
+        /* ---------------------------------------------------
+           JANELA MODAL (+ Info)
+        --------------------------------------------------- */
+        .modal-header, .modal-footer {
+            border-color: var(--border-color) !important;
+        }
+        .nav-tabs {
+            border-bottom-color: var(--border-color) !important;
+        }
+        .nav-tabs > li > a:hover {
+            background-color: var(--bg-hover) !important;
+            border-color: var(--border-color) !important;
+        }
+        .nav-tabs > li.active > a,
+        .nav-tabs > li.active > a:hover,
+        .nav-tabs > li.active > a:focus {
+            background-color: var(--bg-body) !important;
+            color: var(--text-main) !important;
+            border-color: var(--border-color) !important;
+            border-bottom-color: transparent !important;
+        }
+
+        /* Forçar fundos inline a ficarem transparentes */
+        div[style*="background-color: white"],
+        div[style*="background-color: #fff"],
+        div[style*="background-color:#ffffff"] {
+            background-color: transparent !important;
+        }
+
+        /* Fotos dos professores com uma pequena borda para destacar */
+        .img-circle {
+            border: 2px solid var(--border-color) !important;
+            padding: 2px !important;
+            background-color: var(--bg-body) !important;
+        }
+    `;
+
+    document.head.appendChild(style);
+})();
