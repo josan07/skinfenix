@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         FenixOnSteroids
 // @namespace    http://tampermonkey.net/
-// @version      2.21
-// @description  Melhor interface para as páginas das cadeiras
+// @version      2.24
+// @description  Melhor interface para as páginas das cadeiras - No More White Flash
 // @author       josan07
-// @match        *://fenix.tecnico.ulisboa.pt/*
+// @match        *://fenix.tecnico.ulisboa.pt/disciplinas/*
 // @grant        none
+// @run-at       document-start
 // ==/UserScript==
 
 (function() {
@@ -22,6 +23,36 @@
 
     document.documentElement.setAttribute('data-theme', currentTheme);
 
+    // ==========================================
+    // "SCORCHED EARTH" ANTI-FLASHBANG
+    // Ataca o HTML, o Body e as margens infinitas do browser
+    // ==========================================
+    if (currentTheme === 'dark') {
+        // 1. Força o fundo no objeto raiz imediatamente
+        document.documentElement.style.setProperty('background', '#121212', 'important');
+        document.documentElement.style.colorScheme = 'dark';
+
+        // 2. Cria um escudo de CSS que cobre TUDO o que for background nas laterais
+        const flashbangShield = document.createElement('style');
+        flashbangShield.id = 'anti-flashbang-ultimate';
+        flashbangShield.textContent = `
+            /* Força o canvas do browser a ser preto */
+            :root, html, body {
+                background-color: #121212 !important;
+                background-image: none !important;
+            }
+            /* Bloqueia flashbangs em contentores de largura total */
+            #wrap, #main-container, .container-fluid, .footer, #headcounter {
+                background-color: #121212 !important;
+            }
+            /* Evita que o branco apareça durante o "layout shift" */
+            * {
+                transition: none !important;
+            }
+        `;
+        document.documentElement.appendChild(flashbangShield);
+    }
+
     // Definição das paletas de cor
     const colorPalettes = {
         'tecnico': { name: 'Técnico', base: '#009de0', hover: '#007dba' },
@@ -30,49 +61,35 @@
         'green':   { name: 'Verde', base: '#2a9d8f', hover: '#21867a' }
     };
 
-    // Aplica as variáveis de cor dinamicamente na raiz (HTML)
     function applyColor(colorKey) {
         const theme = colorPalettes[colorKey];
         const rootStyle = document.documentElement.style;
-
         rootStyle.setProperty('--accent-blue', theme.base);
         rootStyle.setProperty('--accent-blue-hover', theme.hover);
         rootStyle.setProperty('--active-pill-bg', theme.base);
-
         localStorage.setItem(colorStorageKey, colorKey);
         currentColor = colorKey;
-
-        // Injeta a cor atual como atributo para o CSS condicional
         document.documentElement.setAttribute('data-color', colorKey);
     }
 
-    // Inicializa a cor
     applyColor(currentColor);
 
     // ==========================================
     // ESTILOS GERAIS (CSS)
     // ==========================================
     const customCSS = `
-        /* ===================================================
-           IMPORTAÇÃO DE FONTES DO GITHUB
-           =================================================== */
+        /* Fontes */
         @font-face { font-family: 'Klavika'; src: url('https://raw.githubusercontent.com/josan07/fonts/main/Klavika-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; }
         @font-face { font-family: 'Klavika'; src: url('https://raw.githubusercontent.com/josan07/fonts/main/klavika-medium.otf') format('opentype'); font-weight: 500; font-style: normal; }
         @font-face { font-family: 'Klavika'; src: url('https://raw.githubusercontent.com/josan07/fonts/main/klavika-bold.otf') format('opentype'); font-weight: 700; font-style: normal; }
-
         @font-face { font-family: 'Source Sans 3'; src: url('https://raw.githubusercontent.com/josan07/fonts/main/SourceSans3-Light.ttf') format('truetype'); font-weight: 300; font-style: normal; }
         @font-face { font-family: 'Source Sans 3'; src: url('https://raw.githubusercontent.com/josan07/fonts/main/SourceSans3-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; }
         @font-face { font-family: 'Source Sans 3'; src: url('https://raw.githubusercontent.com/josan07/fonts/main/SourceSans3-Medium.ttf') format('truetype'); font-weight: 500; font-style: normal; }
         @font-face { font-family: 'Source Sans 3'; src: url('https://raw.githubusercontent.com/josan07/fonts/main/SourceSans3-SemiBold.ttf') format('truetype'); font-weight: 600; font-style: normal; }
         @font-face { font-family: 'Source Sans 3'; src: url('https://raw.githubusercontent.com/josan07/fonts/main/SourceSans3-Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; }
-
-        /* FONTES MINECRAFT PARA O MODO ARCO-ÍRIS */
         @font-face { font-family: 'Minecraft'; src: url('https://raw.githubusercontent.com/josan07/fonts/main/MinecraftRegular.otf') format('opentype'); font-weight: 400; font-style: normal; }
         @font-face { font-family: 'Minecraft'; src: url('https://raw.githubusercontent.com/josan07/fonts/main/MinecraftBold.otf') format('opentype'); font-weight: 700; font-style: normal; }
 
-        /* ===================================================
-           PALETAS DE CORES BASE (Fundo e Texto)
-           =================================================== */
         :root {
             --bg-body: #f0f2f5;
             --bg-header: #ffffff;
@@ -99,9 +116,6 @@
             --input-bg: #1e1e1e;
         }
 
-        /* ===================================================
-           ESTILOS GERAIS DO FÉNIX E TÍTULOS REFORÇADOS
-           =================================================== */
         body, html {
             background-color: var(--bg-body) !important;
             color: var(--text-main) !important;
@@ -125,7 +139,6 @@
         }
         h3 { font-weight: 500 !important; }
 
-        /* MEGA ESPAÇAMENTO PARA O TÍTULO RESPIRAR */
         .page-header {
             margin-top: 60px !important;
             padding-bottom: 15px !important;
@@ -202,20 +215,16 @@
             box-shadow: 0 0 5px var(--accent-blue) !important;
         }
 
-        /* ===================================================
-           BARRA DE CIMA REFORÇADA E CONSOLIDAÇÃO DE MENUS
-           =================================================== */
         #headcounter .container {
             display: flex !important;
-            justify-content: flex-start !important; /* Força os elementos do fluxo normal para a esquerda */
+            justify-content: flex-start !important;
             align-items: center !important;
             width: 100% !important;
-            max-width: 1200px !important; /* Ou a largura que preferires */
+            max-width: 1200px !important;
             margin: 0 auto !important;
             position: relative !important;
         }
 
-        /* Garante que o Logo se encosta à esquerda e empurra o resto se necessário */
         .site-header a:first-child,
         .navbar-brand,
         .navbar-header {
@@ -224,7 +233,6 @@
             display: inline-block !important;
         }
 
-        /* Conjunto final de Menus e Botões no topo direito */
         .headerMenuPositioningCluster {
             display: flex !important;
             align-items: center !important;
@@ -249,7 +257,6 @@
             margin: 0 !important;
         }
 
-        /* Ajuste fino nos links de língua para o topo */
         .headerMenuPositioningCluster a[href*="locale"] {
             text-transform: uppercase !important;
             color: var(--text-main) !important;
@@ -279,7 +286,6 @@
             transition: background-color 0.3s ease;
         }
 
-        /* --- MENUS E BARRAS ATIVAS --- */
         .nav-pills > li > a {
             color: var(--text-main) !important;
             background-color: transparent !important;
@@ -337,87 +343,16 @@
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        /* ===================================================
-           CORREÇÃO DE ÍCONES (RSS / Sidebar)
-           =================================================== */
-        .nav-pills > li { position: relative; }
-
-        .nav-pills > li > a:not([href*="rss"]) {
-            padding-right: 35px !important;
-            position: relative;
-            z-index: 1 !important;
-        }
-
-        .nav-pills > li > a[href*="rss"] {
-            position: absolute !important;
-            right: 12px !important;
-            top: 50% !important;
-            transform: translateY(-50%) !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            background-color: transparent !important;
-            border: none !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            z-index: 10 !important;
-        }
-
-        .nav-pills > li > a[href*="rss"] img {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            transition: filter 0.2s ease;
-        }
-
-        .nav-pills > li > a[href*="rss"] img { filter: opacity(0.5); }
-        .nav-pills > li > a[href*="rss"]:hover img { filter: opacity(0.8); }
-
-        html[data-theme="dark"] .nav-pills > li > a[href*="rss"] img { filter: invert(1) opacity(0.6); }
-        html[data-theme="dark"] .nav-pills > li > a[href*="rss"]:hover img { filter: invert(1) opacity(0.9); }
-
-        .nav-pills > li.active > a[href*="rss"] img {
-            filter: brightness(0) invert(1) !important;
-            opacity: 1 !important;
-        }
-
-        /* ===================================================
-           LOGÓTIPOS PERSONALIZADOS DO GITHUB
-           =================================================== */
-        .navbar-brand img,
-        .navbar-header img,
-        .site-header a:first-child > img,
-        a[href*="tecnico.ulisboa.pt"] img {
+        .navbar-brand img, .navbar-header img, .site-header a:first-child > img, a[href*="tecnico.ulisboa.pt"] img {
             content: url('https://raw.githubusercontent.com/josan07/fonts/main/fenix.png') !important;
-            max-height: 90px !important; /* MEGA AUMENTO */
-            width: auto !important;
-            object-fit: contain !important;
-            transition: content 0.3s ease-in-out;
-            margin-left: 0 !important; /* Garante que a imagem fica encostada à margem esquerda do link */
+            max-height: 90px !important; width: auto !important; object-fit: contain !important; margin-left: 0 !important;
         }
 
-        /* Modo Escuro - Muda automaticamente para fenixdark.png */
-        html[data-theme="dark"] .navbar-brand img,
-        html[data-theme="dark"] .navbar-header img,
-        html[data-theme="dark"] .site-header a:first-child > img,
-        html[data-theme="dark"] a[href*="tecnico.ulisboa.pt"] img {
+        html[data-theme="dark"] .navbar-brand img, html[data-theme="dark"] .navbar-header img, html[data-theme="dark"] .site-header a:first-child > img, html[data-theme="dark"] a[href*="tecnico.ulisboa.pt"] img {
             content: url('https://raw.githubusercontent.com/josan07/fonts/main/fenixdark.png') !important;
         }
 
-
-        /* ===================================================
-           MODO GAY (THE ULTIMATE PRIDE + MINECRAFT)
-           =================================================== */
-
-        :root {
-            var(--pride-gradient): linear-gradient(90deg, #FF0018, #FFA52C, #FFFF41, #008018, #0000F9, #86007D);
-        }
-
-        @keyframes rainbowBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        @keyframes rainbowBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         html[data-color="gay"] .nav-pills > li.active > a:not([href*="rss"]),
         html[data-color="gay"] .nav-pills > li.active > a:not([href*="rss"]):hover,
@@ -425,105 +360,53 @@
         html[data-color="gay"] .nav-tabs > li.active > a:hover,
         html[data-color="gay"] .nav-tabs > li.active > a:focus {
             background: linear-gradient(90deg, #FF0018, #FFA52C, #FFFF41, #008018, #0000F9, #86007D) !important;
-            background-size: 300% 300% !important;
-            animation: rainbowBG 6s ease infinite !important;
-            color: white !important;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8) !important;
-            border-color: transparent !important;
+            background-size: 300% 300% !important; animation: rainbowBG 6s ease infinite !important; color: white !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.8) !important; border-color: transparent !important;
         }
 
-        html[data-color="gay"] #headcounter {
-            border-bottom: 3px solid transparent !important;
-            border-image: linear-gradient(90deg, #FF0018, #FFA52C, #FFFF41, #008018, #0000F9, #86007D) 1 !important;
-        }
+        html[data-color="gay"] #headcounter { border-bottom: 3px solid transparent !important; border-image: linear-gradient(90deg, #FF0018, #FFA52C, #FFFF41, #008018, #0000F9, #86007D) 1 !important; }
 
         html[data-color="gay"] .badge {
             background: linear-gradient(90deg, #FF0018, #FFA52C, #FFFF41, #008018, #0000F9, #86007D) !important;
-            background-size: 300% 300% !important;
-            animation: rainbowBG 6s ease infinite !important;
-            color: white !important;
-            border: none !important;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.6) !important;
+            background-size: 300% 300% !important; animation: rainbowBG 6s ease infinite !important; color: white !important; border: none !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.6) !important;
         }
 
-        /* Força todos os títulos a usarem a fonte Minecraft neste modo e aplica o gradiente animado */
-        html[data-color="gay"] h1,
-        html[data-color="gay"] h2,
-        html[data-color="gay"] h3,
-        html[data-color="gay"] h4,
-        html[data-color="gay"] h5,
-        html[data-color="gay"] h6,
-        html[data-color="gay"] .modal-title,
-        html[data-color="gay"] .site-header,
-        html[data-color="gay"] .site-header a,
-        html[data-color="gay"] .page-header h2 {
-            font-family: 'Minecraft', sans-serif !important;
-            background: linear-gradient(90deg, #FF0018, #FFA52C, #FFFF41, #008018, #0000F9, #86007D);
-            background-size: 300% 300%;
-            animation: rainbowBG 6s ease infinite;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            background-clip: text !important;
-            color: transparent !important;
-            text-shadow: none !important;
+        html[data-color="gay"] h1, html[data-color="gay"] h2, html[data-color="gay"] h3, html[data-color="gay"] h4, html[data-color="gay"] h5, html[data-color="gay"] h6, html[data-color="gay"] .modal-title, html[data-color="gay"] .site-header, html[data-color="gay"] .site-header a, html[data-color="gay"] .page-header h2 {
+            font-family: 'Minecraft', sans-serif !important; background: linear-gradient(90deg, #FF0018, #FFA52C, #FFFF41, #008018, #0000F9, #86007D); background-size: 300% 300%; animation: rainbowBG 6s ease infinite; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important; color: transparent !important; text-shadow: none !important;
         }
     `;
 
     const styleElem = document.createElement('style');
     styleElem.id = 'fenix-custom-theme-style';
-    styleElem.innerHTML = customCSS;
-    document.head.appendChild(styleElem);
+    styleElem.textContent = customCSS;
+    if (document.head) document.head.appendChild(styleElem);
+    else document.documentElement.appendChild(styleElem);
 
-    // ==========================================
-    // INTERFACE DOS BOTÕES E CONSOLIDAÇÃO DE MENUS
-    // ==========================================
     function initUI() {
         const topHeaderContainer = document.querySelector('#headcounter .container');
         if (!topHeaderContainer) return;
 
-        // --- A. Conjunto de Menus do Topo ---
         const finalHeaderCluster = document.createElement('div');
         finalHeaderCluster.classList.add('headerMenuPositioningCluster');
 
-        // --- B. Clonagem Inteligente do Conjunto de Menus da Lateral ---
-        // Localiza o conjunto original na barra lateral
         const oldLinksParentDiv = document.querySelector('.col-sm-3.hidden-xs > div');
-
         if (oldLinksParentDiv) {
-            // Localiza todos os links (Línguas, etc.) dentro dele
             const sideLinks = oldLinksParentDiv.querySelectorAll('a');
-
-            // Clona e move os links para o novo menu no topo
-            sideLinks.forEach(link => {
-                const clink = link.cloneNode(true);
-                finalHeaderCluster.appendChild(clink);
-            });
-
-            // Elimina o contentor antigo da lateral para libertar espaço
+            sideLinks.forEach(link => { finalHeaderCluster.appendChild(link.cloneNode(true)); });
             const oldLinksGrandparent = oldLinksParentDiv.closest('.col-sm-3.hidden-xs');
-            if (oldLinksGrandparent) {
-                oldLinksGrandparent.remove();
-            } else {
-                oldLinksParentDiv.remove();
-            }
+            if (oldLinksGrandparent) oldLinksGrandparent.remove();
+            else oldLinksParentDiv.remove();
         }
 
-        // --- 1. Botão Homepage ---
         const homeBtn = document.createElement('a');
         homeBtn.href = 'https://fenix.tecnico.ulisboa.pt/messaging';
         homeBtn.innerText = 'Homepage';
         homeBtn.style.padding = '4px 10px';
         homeBtn.style.background = 'transparent';
-
-        // Adiciona ao cluster
         finalHeaderCluster.appendChild(homeBtn);
 
-        // --- 2. Menu Integrado Unificado (Tema e Cores) ---
         const combinedThemeContainer = document.createElement('div');
         combinedThemeContainer.style.position = 'relative';
         combinedThemeContainer.style.display = 'inline-block';
-        combinedThemeContainer.style.margin = '0';
-        combinedThemeContainer.style.padding = '0';
         combinedThemeContainer.style.verticalAlign = 'middle';
 
         const themeBtn = document.createElement('button');
@@ -546,18 +429,14 @@
         themeMenu.style.minWidth = '130px';
         themeMenu.style.overflow = 'hidden';
 
-        // 2.1 Opção: Alternar Escuro/Claro (com texto limpo)
         const toggleItem = document.createElement('div');
         toggleItem.style.padding = '8px 12px';
         toggleItem.style.cursor = 'pointer';
         toggleItem.style.fontSize = '13px';
         toggleItem.style.color = 'var(--text-main)';
         toggleItem.style.fontWeight = '600';
-        toggleItem.style.transition = 'background-color 0.2s';
 
-        function updateToggleText() {
-            toggleItem.innerText = currentTheme === 'dark' ? 'Modo: Claro' : 'Modo: Escuro';
-        }
+        function updateToggleText() { toggleItem.innerText = currentTheme === 'dark' ? 'Modo: Claro' : 'Modo: Escuro'; }
         updateToggleText();
 
         toggleItem.onmouseover = () => toggleItem.style.backgroundColor = 'var(--bg-hover)';
@@ -568,19 +447,27 @@
             currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
             localStorage.setItem(themeStorageKey, currentTheme);
             document.documentElement.setAttribute('data-theme', currentTheme);
+
+            const shield = document.getElementById('anti-flashbang-ultimate');
+            if (currentTheme === 'light') {
+                document.documentElement.style.setProperty('background-color', '#f0f2f5', 'important');
+                document.documentElement.style.colorScheme = 'light';
+                if (shield) shield.remove();
+            } else {
+                document.documentElement.style.setProperty('background-color', '#121212', 'important');
+                document.documentElement.style.colorScheme = 'dark';
+            }
             updateToggleText();
             updateButtonVisuals();
         };
         themeMenu.appendChild(toggleItem);
 
-        // Separador Visual
         const separator = document.createElement('div');
         separator.style.height = '1px';
         separator.style.backgroundColor = 'var(--border-color)';
         separator.style.margin = '4px 0';
         themeMenu.appendChild(separator);
 
-        // 2.2 Opções: Paleta de Cores (sem emojis)
         Object.keys(colorPalettes).forEach(key => {
             const item = document.createElement('div');
             item.style.padding = '8px 12px';
@@ -589,8 +476,6 @@
             item.style.alignItems = 'center';
             item.style.fontSize = '13px';
             item.style.color = 'var(--text-main)';
-            item.style.transition = 'background-color 0.2s';
-
             item.onmouseover = () => item.style.backgroundColor = 'var(--bg-hover)';
             item.onmouseout = () => item.style.backgroundColor = 'transparent';
 
@@ -599,67 +484,36 @@
             colorDot.style.width = '12px';
             colorDot.style.height = '12px';
             colorDot.style.borderRadius = '50%';
-
-            if (key === 'gay') {
-                colorDot.style.background = 'linear-gradient(45deg, #FF0018, #FFA52C, #FFFF41, #008018, #0000F9, #86007D)';
-            } else {
-                colorDot.style.backgroundColor = colorPalettes[key].base;
-            }
-
+            if (key === 'gay') colorDot.style.background = 'linear-gradient(45deg, #FF0018, #FFA52C, #FFFF41, #008018, #0000F9, #86007D)';
+            else colorDot.style.backgroundColor = colorPalettes[key].base;
             colorDot.style.marginRight = '8px';
             colorDot.style.border = '1px solid var(--border-color)';
 
             item.appendChild(colorDot);
             item.appendChild(document.createTextNode(colorPalettes[key].name));
-
-            item.onclick = () => {
-                applyColor(key);
-                themeMenu.style.display = 'none';
-            };
-
+            item.onclick = () => { applyColor(key); themeMenu.style.display = 'none'; };
             themeMenu.appendChild(item);
         });
 
-        // Eventos do Dropdown
-        themeBtn.onclick = (e) => {
-            e.stopPropagation();
-            themeMenu.style.display = themeMenu.style.display === 'none' ? 'block' : 'none';
-        };
-
-        document.addEventListener('click', () => {
-            themeMenu.style.display = 'none';
-        });
+        themeBtn.onclick = (e) => { e.stopPropagation(); themeMenu.style.display = themeMenu.style.display === 'none' ? 'block' : 'none'; };
+        document.addEventListener('click', () => { themeMenu.style.display = 'none'; });
 
         combinedThemeContainer.appendChild(themeBtn);
         combinedThemeContainer.appendChild(themeMenu);
-
-        // Adiciona ao cluster
         finalHeaderCluster.appendChild(combinedThemeContainer);
 
-        // --- 3. Lógica de Atualização Visual dos Botões ---
         function updateButtonVisuals() {
             const isDark = (currentTheme === 'dark');
             const borderColor = isDark ? '1px solid #555' : '1px solid #ccc';
             const textColor = isDark ? '#e0e0e0' : '#333333';
-
-            // Homepage e Cor dropdown
-            homeBtn.style.color = textColor;
-            homeBtn.style.border = borderColor;
-            themeBtn.style.color = textColor;
-            themeBtn.style.border = borderColor;
+            homeBtn.style.color = textColor; homeBtn.style.border = borderColor;
+            themeBtn.style.color = textColor; themeBtn.style.border = borderColor;
         }
 
         updateButtonVisuals();
-
-        // --- 4. Inserção final no DOM ---
-        // Coloca o novo cluster consolidado no topodireito do cabeçalho
         topHeaderContainer.appendChild(finalHeaderCluster);
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initUI);
-    } else {
-        initUI();
-    }
-
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initUI);
+    else initUI();
 })();
