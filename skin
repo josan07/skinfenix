@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         FénixEdu Custom Theme Pro (Dark/Light + Custom Colors + Ultimate Pride)
+// @name         FenixOnSteroids
 // @namespace    http://tampermonkey.net/
 // @version      2.21
-// @description  Temas, Modo Gay (Minecraft), Espaçamento, Menu Integrado, Logos e Layout Consolidado (Logo à esquerda)
-// @author       Gemini
+// @description  Melhor interface para as páginas das cadeiras
+// @author       josan07
 // @match        *://fenix.tecnico.ulisboa.pt/*
 // @grant        none
 // ==/UserScript==
