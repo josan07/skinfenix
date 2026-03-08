@@ -1,4 +1,4 @@
-# SkinFenix
+# FenixOnSteroids
 
 ![Status: Beta](https://img.shields.io/badge/status-BETA-orange?style=for-the-badge)
 
