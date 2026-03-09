@@ -25,10 +25,9 @@ Primeiro, instale a extensão **Tampermonkey** no seu navegador:
 2. Selecione **"Criar novo script..."** (ou "Create a new script").
 3. Apague todo o código que aparecer no editor.
 
-### 3. Colar o Código
-1. Abra o ficheiro `fenix.js`.
-2. Copie todo o conteúdo e cole-o no editor do Tampermonkey.
-3. Vá a **Ficheiro (File)** > **Guardar (Save)**.
+### 3. Colar o Código (repetir para cada ficheiro `.js`)
+1. Copie todo o conteúdo e cole-o no editor do Tampermonkey.
+2. Vá a **Ficheiro (File)** > **Guardar (Save)** (`Ctrl+S`).
 
 
 ---
