@@ -32,6 +32,7 @@ Primeiro, instale a extensão **Tampermonkey** no seu navegador:
 ---
 
 ##Aviso para browsers Chromium:
+
 Pode ser necessário ir a `chrome://extensions` e fazer o seguinte:
 1. Ativar `Developer Mode` no canto superior direito.
 2. Abrir as definições específicas do Tampermonkey e ativar utilização de user scripts.
