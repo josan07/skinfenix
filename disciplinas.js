@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FenixOnSteroids
 // @namespace    http://tampermonkey.net/
-// @version      2.27
+// @version      2.28
 // @description  Melhor interface para as páginas das cadeiras - No More White Flash (Blackout Edition + Dynamic Calendar)
 // @author       josan07
 // @match        *://fenix.tecnico.ulisboa.pt/disciplinas/*
@@ -19,10 +19,24 @@
     const themeStorageKey = 'fenix-theme-preference';
     const colorStorageKey = 'fenix-color-preference';
 
-    let currentTheme = localStorage.getItem(themeStorageKey) || 'dark';
+    const langMeta = document.querySelector('meta[http-equiv="Content-Language"]');
+    const isEN = langMeta ? langMeta.content.includes('en') : false;
+
+    let savedTheme = localStorage.getItem(themeStorageKey) || 'system';
+    let isSystemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let currentTheme = savedTheme === 'system' ? (isSystemDark ? 'dark' : 'light') : savedTheme;
+
     let currentColor = localStorage.getItem(colorStorageKey) || 'tecnico';
 
     document.documentElement.setAttribute('data-theme', currentTheme);
+
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (localStorage.getItem(themeStorageKey) === 'system' || !localStorage.getItem(themeStorageKey)) {
+                location.reload();
+            }
+        });
+    }
 
     // ==========================================
     // "BLACKOUT CURTAIN" ANTI-FLASHBANG
@@ -586,47 +600,52 @@
         themeMenu.style.borderRadius = '6px';
         themeMenu.style.boxShadow = '0 4px 12px var(--shadow-color)';
         themeMenu.style.zIndex = '10000';
-        themeMenu.style.minWidth = '130px';
+        themeMenu.style.minWidth = '160px';
         themeMenu.style.overflow = 'hidden';
 
-        const toggleItem = document.createElement('div');
-        toggleItem.style.padding = '8px 12px';
-        toggleItem.style.cursor = 'pointer';
-        toggleItem.style.fontSize = '13px';
-        toggleItem.style.color = 'var(--text-main)';
-        toggleItem.style.fontWeight = '600';
+        const modeOptions = [
+            { key: 'system', namePT: 'Sistema (Automático)', nameEN: 'System Default' },
+            { key: 'light', namePT: 'Modo Claro', nameEN: 'Light Mode' },
+            { key: 'dark', namePT: 'Modo Escuro', nameEN: 'Dark Mode' }
+        ];
 
-        function updateToggleText() { toggleItem.innerText = currentTheme === 'dark' ? 'Modo: Claro' : 'Modo: Escuro'; }
-        updateToggleText();
+        modeOptions.forEach(mode => {
+            const item = document.createElement('div');
+            item.style.padding = '8px 12px';
+            item.style.cursor = 'pointer';
+            item.style.fontSize = '13px';
+            item.style.color = 'var(--text-main)';
+            item.style.display = 'flex';
+            item.style.alignItems = 'center';
+            if (savedTheme === mode.key) item.style.fontWeight = '700';
 
-        toggleItem.onmouseover = () => toggleItem.style.backgroundColor = 'var(--bg-hover)';
-        toggleItem.onmouseout = () => toggleItem.style.backgroundColor = 'transparent';
+            const checkSpan = document.createElement('span');
+            checkSpan.style.display = 'inline-block';
+            checkSpan.style.width = '16px';
+            checkSpan.style.color = 'var(--accent-blue)';
+            checkSpan.style.fontWeight = 'bold';
+            checkSpan.innerHTML = savedTheme === mode.key ? '✔' : '';
 
-        toggleItem.onclick = (e) => {
-            e.stopPropagation();
-            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            localStorage.setItem(themeStorageKey, currentTheme);
-            document.documentElement.setAttribute('data-theme', currentTheme);
+            item.appendChild(checkSpan);
+            item.appendChild(document.createTextNode(isEN ? mode.nameEN : mode.namePT));
 
-            const shield = document.getElementById('anti-flashbang-ultimate');
-            if (currentTheme === 'light') {
-                document.documentElement.style.setProperty('background-color', '#f0f2f5', 'important');
-                document.documentElement.style.colorScheme = 'light';
-                if (shield) shield.remove();
-            } else {
-                document.documentElement.style.setProperty('background-color', '#121212', 'important');
-                document.documentElement.style.colorScheme = 'dark';
-            }
-            updateToggleText();
-            updateButtonVisuals();
-        };
-        themeMenu.appendChild(toggleItem);
+            item.onmouseover = () => item.style.backgroundColor = 'var(--bg-hover)';
+            item.onmouseout = () => item.style.backgroundColor = 'transparent';
 
-        const separator = document.createElement('div');
-        separator.style.height = '1px';
-        separator.style.backgroundColor = 'var(--border-color)';
-        separator.style.margin = '4px 0';
-        themeMenu.appendChild(separator);
+            item.onclick = (e) => {
+                e.stopPropagation();
+                localStorage.setItem(themeStorageKey, mode.key);
+                location.reload();
+            };
+
+            themeMenu.appendChild(item);
+        });
+
+        const separator1 = document.createElement('div');
+        separator1.style.height = '1px';
+        separator1.style.backgroundColor = 'var(--border-color)';
+        separator1.style.margin = '4px 0';
+        themeMenu.appendChild(separator1);
 
         Object.keys(colorPalettes).forEach(key => {
             const item = document.createElement('div');
