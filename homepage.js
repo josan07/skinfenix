@@ -1,16 +1,17 @@
 // ==UserScript==
 // @name         FenixOnSteroidsHpage
 // @namespace    http://tampermonkey.net/
-// @version      4.8
+// @version      6.2
 // @description  Melhor interface para Fenix - Curated Palettes & Smart Text Contrast
 // @author       josan07
 // @match        *://fenix.tecnico.ulisboa.pt/student*
 // @match        *://fenix.tecnico.ulisboa.pt/personal*
 // @match        *://fenix.tecnico.ulisboa.pt/space-management*
 // @match        *://fenix.tecnico.ulisboa.pt/messaging*
+// @match        *://fenix.tecnico.ulisboa.pt/person*
 // @match        *://fenix.tecnico.ulisboa.pt/cms*
-// @match        *://fenix.tecnico.ulisboa.pt/learning*
-
+// @match        *://fenix.tecnico.ulisboa.pt/commHub*
+// @match        *://fenix.tecnico.ulisboa.pt/spaces-view*
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==
@@ -222,30 +223,12 @@
         html[data-theme="dark"] *[style*="background-color: #fff"],
         html[data-theme="dark"] td[bgcolor="white"] { background-color: transparent !important; }
 
-        html[data-theme="dark"] table, html[data-theme="dark"] .table, html[data-theme="dark"] th, html[data-theme="dark"] td, html[data-theme="dark"] .tstyle1, html[data-theme="dark"] .tstyle2 {
+        /* Basic table clearing for invisible layout tables */
+        html[data-theme="dark"] table, html[data-theme="dark"] th, html[data-theme="dark"] td {
             background-color: transparent !important; color: var(--text-main) !important; border-color: var(--border-color) !important;
         }
-        html[data-theme="dark"] .infoop, html[data-theme="dark"] .infoop2, html[data-theme="dark"] .table th { background-color: var(--bg-content) !important; }
-        .panel { background-color: var(--bg-content) !important; border-color: var(--border-color) !important; }
-        .panel-heading, .panel-footer { background-color: var(--bg-hover) !important; border-color: var(--border-color) !important; color: var(--text-main) !important; }
-
-        /* FORMS & DROPDOWNS */
-        select, input[type="text"], input[type="password"], input[type="email"], textarea, .form-control {
-            background-color: var(--input-bg) !important; color: var(--text-main) !important; border: 1px solid var(--border-color) !important;
-            border-radius: 4px !important; padding: 6px 12px !important; font-family: 'Source Sans 3', sans-serif !important;
-            outline: none !important; transition: border-color 0.2s ease;
-        }
-        select:focus, input:focus, textarea:focus, .form-control:focus { border-color: var(--accent-blue) !important; box-shadow: 0 0 5px var(--accent-blue) !important; }
-        html[data-theme="dark"] select option { background-color: var(--bg-content) !important; color: var(--text-main) !important; }
-
-        /* CALENDAR CAPTIONS */
-        table caption {
-            background-color: var(--bg-hover) !important; color: var(--text-main) !important; font-family: 'Klavika', sans-serif !important;
-            font-size: 16px !important; font-weight: 600 !important; border: 1px solid var(--border-color) !important;
-            border-bottom: none !important; padding: 10px !important; border-radius: 6px 6px 0 0 !important;
-        }
-
-        /* ALERTS */
+        
+        /* ALERTS AND WELLS */
         .alert, .infoop, .infoop2, .warning0, .warning1, .error0, .error1, .success0, .success1 {
             background-image: none !important; text-shadow: none !important; box-shadow: none !important; border-radius: 4px !important;
         }
@@ -253,7 +236,272 @@
         .alert-danger, .alert-error, .error0, .error1, #alerts > div[style*="#ffb3d1"], #alerts > div[style*="rgb(255, 179, 209)"] { background-color: var(--alert-err-bg) !important; color: var(--alert-err-text) !important; border: 1px solid var(--alert-err-border) !important; }
         .alert-success, .success0, .success1, #alerts > div[style*="#d9ffb3"], #alerts > div[style*="rgb(217, 255, 179)"] { background-color: var(--alert-succ-bg) !important; color: var(--alert-succ-text) !important; border: 1px solid var(--alert-succ-border) !important; }
         .alert-info, .infoop, .infoop2, #alerts > div[style*="#ccffff"], #alerts > div[style*="rgb(204, 255, 255)"] { background-color: var(--alert-info-bg) !important; color: var(--alert-info-text) !important; border: 1px solid var(--alert-info-border) !important; }
+        .well { background-color: var(--alert-info-bg) !important; color: var(--alert-info-text) !important; border: 1px solid var(--alert-info-border) !important; box-shadow: none !important; }
         #alerts > div { border-radius: 4px !important; text-shadow: none !important; }
+
+        /* MAIN CONTENT */
+        header[role="banner"] + div { max-width: 1200px !important; margin: 0 auto !important; padding: 0 !important; }
+        #main-content-wrapper, .main-content {
+            background-color: var(--bg-content) !important; 
+            color: var(--text-main) !important; 
+            padding: 30px !important;
+            border-radius: 8px !important; 
+            border: 1px solid var(--border-color) !important; 
+            box-shadow: 0 4px 15px var(--shadow-color) !important;
+            margin-bottom: 30px !important; 
+            min-height: 500px; 
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            box-sizing: border-box !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            overflow-x: hidden !important; 
+        }
+
+        /* ALIGNMENT FIX FOR 'INFORMAÇÃO PESSOAL' ROWS */
+        #main-content-wrapper .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+        }
+        #main-content-wrapper .row > [class*="col-"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: 0 0 100% !important;
+            float: none !important; 
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        /* TAME THE PHOTO/WELL TABLE (Section 1) */
+        table.mvert1 {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: fixed !important;
+            border-collapse: collapse !important;
+            margin-bottom: 20px !important;
+        }
+        table.mvert1 td {
+            white-space: normal !important;
+            word-wrap: break-word !important;
+        }
+        table.mvert1 td:first-child {
+            width: 140px !important; 
+            vertical-align: top !important;
+        }
+        table.mvert1 td:last-child {
+            vertical-align: top !important;
+            padding-left: 20px !important;
+        }
+        table.mvert1 td > div[style*="padding"] {
+            padding: 0 !important;
+        }
+
+        /* SMART TABLE OVERFLOW FIX FOR DATA TABLES (Contactos, Search spaces) */
+        .table-responsive {
+            width: 100% !important;
+            overflow-x: auto !important;
+            margin-bottom: 20px !important;
+            border-radius: 8px !important;
+            border: 1px solid var(--border-color) !important;
+            box-shadow: 0 4px 15px var(--shadow-color) !important;
+            -webkit-overflow-scrolling: touch;
+            background-color: var(--bg-content) !important;
+        }
+        .table-responsive table {
+            margin-bottom: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        /* TABLE STYLING */
+        .table thead tr { background: var(--bg-hover) !important; color: var(--text-main) !important; border-bottom: 2px solid var(--border-color) !important; }
+        .table tbody tr { background: var(--bg-content) !important; color: var(--text-main) !important; }
+        .table tbody tr:nth-child(even) { background: var(--bg-body) !important; }
+        .table td, .table th { border-color: var(--border-color) !important; vertical-align: middle !important; padding: 12px 10px !important; }
+        
+        html[data-theme="dark"] .table th { background-color: var(--bg-hover) !important; }
+        span[style*="color: #A9A9A9"], span[style*="color:#A9A9A9"] { color: var(--text-muted) !important; }
+
+        /* MODERN FORMS */
+        .form-control, select, input[type="text"], input[type="password"], input[type="email"], textarea {
+            background-color: var(--input-bg) !important; 
+            color: var(--text-main) !important; 
+            border: 1px solid var(--border-color) !important;
+            border-radius: 6px !important; 
+            padding: 8px 12px !important; 
+            font-family: 'Source Sans 3', sans-serif !important;
+            font-size: 14px !important;
+            outline: none !important; 
+            transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+            height: auto !important;
+            box-shadow: none !important;
+        }
+        .form-control:focus, select:focus, input:focus, textarea:focus { 
+            border-color: var(--accent-blue) !important; 
+            box-shadow: 0 0 0 3px rgba(0, 157, 224, 0.2) !important; 
+        }
+
+        /* Specific fix for "Pesquisa de Espaços" search bar */
+        .form-inline {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            background-color: var(--bg-hover) !important;
+            padding: 15px 20px !important;
+            border-radius: 8px !important;
+            border: 1px solid var(--border-color) !important;
+            margin-bottom: 25px !important;
+            flex-wrap: wrap !important;
+        }
+        .form-inline .form-group {
+            margin: 0 !important;
+            flex-grow: 1 !important;
+        }
+        .form-inline .form-control {
+            width: 100% !important;
+            max-width: 400px !important;
+        }
+        .form-inline .btn {
+            margin: 0 !important;
+            background-color: var(--active-pill-bg) !important;
+            color: var(--active-pill-text) !important;
+            border: none !important;
+            padding: 9px 20px !important;
+            font-weight: 600 !important;
+        }
+
+        /* PAGE HEADERS FIX */
+        .page-header {
+            border-bottom: 2px solid var(--border-color) !important;
+            padding-bottom: 10px !important;
+            margin: 0 0 20px 0 !important;
+        }
+        .page-header h1 {
+            font-size: 24px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            flex-wrap: wrap !important;
+        }
+        .page-header h1 small {
+            font-size: 16px !important;
+            color: var(--text-muted) !important;
+            font-family: 'Source Sans 3', sans-serif !important;
+            font-weight: 500 !important;
+        }
+        .page-header h1 small:before {
+            content: "—";
+            margin-right: 10px;
+        }
+
+        /* MODERN PESSOAL PAGE UI TITLES */
+        .modern-section-title {
+            display: flex !important;
+            align-items: center !important;
+            margin-top: 40px !important;
+            margin-bottom: 15px !important;
+            border-bottom: 2px solid var(--border-color) !important;
+            padding-bottom: 8px !important;
+        }
+        .modern-section-badge {
+            background-color: var(--active-pill-bg) !important;
+            color: var(--active-pill-text) !important;
+            font-family: 'Klavika', sans-serif !important;
+            font-weight: 700 !important;
+            font-size: 16px !important;
+            width: 28px !important;
+            height: 28px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 6px !important;
+            margin-right: 12px !important;
+        }
+        .modern-section-text {
+            font-family: 'Klavika', sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 20px !important;
+            color: var(--text-main) !important;
+            margin: 0 !important;
+        }
+
+        /* Modernize Action Links & KEEP ON SINGLE LINE */
+        .tdclear, .table tbody tr td:last-child {
+            white-space: nowrap !important;
+            text-align: right !important;
+            width: 1% !important; /* Force column to shrink to content */
+            vertical-align: middle !important;
+        }
+        .tdclear a, .table tbody tr td:last-child a.btn {
+            display: inline-block !important;
+            padding: 6px 12px !important;
+            margin: 0 4px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            border-radius: 4px !important;
+            background-color: var(--bg-hover) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border-color) !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+        }
+        .tdclear a:hover, .table tbody tr td:last-child a.btn:hover {
+            background-color: var(--accent-blue) !important;
+            color: #ffffff !important;
+            border-color: var(--accent-blue) !important;
+        }
+        
+        /* Delete Button Glowing Red */
+        .tdclear a[href*="delete"]:hover, 
+        .tdclear a[href*="Delete"]:hover {
+            background-color: #e63946 !important;
+            color: #ffffff !important;
+            border-color: #e63946 !important;
+            box-shadow: 0 0 10px rgba(230, 57, 70, 0.7) !important;
+        }
+
+        /* Standalone generic links under photo area */
+        td[style*="padding: 0 2em;"] a {
+            display: inline-block !important;
+            padding: 6px 12px !important;
+            font-weight: 600 !important;
+            border-radius: 4px !important;
+            background-color: var(--bg-hover) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+            text-decoration: none !important;
+            margin-right: 8px !important;
+            margin-top: 10px !important;
+            transition: all 0.2s ease !important;
+        }
+        td[style*="padding: 0 2em;"] a:hover {
+            background-color: var(--accent-blue) !important;
+            color: #fff !important;
+            border-color: var(--accent-blue) !important;
+        }
+
+        /* Profile Image */
+        img[src*="retrievePersonalPhoto"] {
+            border-radius: 50% !important;
+            border: 3px solid var(--accent-blue) !important;
+            box-shadow: 0 4px 10px var(--shadow-color) !important;
+            object-fit: cover;
+        }
+        .play-bg { border-radius: 50% !important; }
+
+        /* The "Privado" Badge */
+        .badge {
+            background-color: var(--bg-hover) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border-color) !important;
+            font-weight: 600 !important;
+            padding: 4px 8px !important;
+            border-radius: 12px !important;
+        }
 
         /* HIDING NATIVE GARBAGE */
         .fenixedu-bar, .navbar-inverse { display: none !important; }
@@ -304,13 +552,8 @@
             color: var(--active-pill-bg) !important; background: transparent !important; background-color: transparent !important; border: none !important; border-bottom: 3px solid var(--active-pill-bg) !important; outline: none !important; box-shadow: none !important;
         }
 
-        /* MAIN CONTENT */
+        /* MAIN CONTENT - Positioning */
         header[role="banner"] + div { max-width: 1200px !important; margin: 0 auto !important; padding: 0 !important; }
-        #main-content-wrapper, .main-content {
-            background-color: var(--bg-content) !important; color: var(--text-main) !important; padding: 30px !important;
-            border-radius: 8px !important; border: 1px solid var(--border-color) !important; box-shadow: 0 4px 15px var(--shadow-color) !important;
-            margin-bottom: 30px !important; min-height: 500px; transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
 
         /* Breadcrumbs */
         .breadcrumb { background-color: transparent !important; padding: 0 0 15px 5px !important; margin: 0 !important; border-radius: 0 !important; }
@@ -332,6 +575,57 @@
         .btn, .btn-default { background-color: var(--bg-content) !important; background-image: none !important; color: var(--text-main) !important; border: 1px solid var(--border-color) !important; text-shadow: none !important; box-shadow: none !important; transition: all 0.2s ease !important; outline: none !important; }
         .btn:hover, .btn-default:hover, .btn:focus, .btn-default:focus { background-color: var(--bg-hover) !important; color: var(--accent-blue) !important; border-color: var(--border-color) !important; outline: none !important; }
         .btn.active, .btn-default.active, .btn:active, .btn-default:active, .btn-group > .btn.active { background-color: var(--active-pill-bg) !important; color: var(--active-pill-text) !important; border-color: var(--active-pill-bg) !important; box-shadow: none !important; }
+
+        /* ==========================================
+           SLEEK WEEK SELECTOR CSS
+           ========================================== */
+        .sleek-week-selector {
+            background-color: var(--bg-hover) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 8px !important;
+            padding: 12px 20px !important;
+            margin-bottom: 25px !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+        .sleek-form-flex {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 12px !important;
+            flex-wrap: wrap !important;
+            margin: 0 !important;
+        }
+        .sleek-label, .sleek-separator {
+            font-family: 'Source Sans 3', sans-serif !important;
+            font-weight: 600 !important;
+            color: var(--text-main) !important;
+            font-size: 14px !important;
+        }
+        .sleek-select {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 6px !important;
+            padding: 6px 12px !important;
+            outline: none !important;
+            cursor: pointer !important;
+            font-family: 'Source Sans 3', sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            text-align: center !important;
+            min-width: 60px !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+        }
+        .sleek-select:focus {
+            border-color: var(--accent-blue) !important;
+            box-shadow: 0 0 5px var(--accent-blue) !important;
+        }
+        /* Fallback for native jumbotron if script doesn't catch it */
+        .jumbotron { width: 100% !important; box-sizing: border-box !important; background-color: var(--bg-hover) !important; border: 1px solid var(--border-color) !important; border-radius: 8px !important; padding: 20px !important; box-shadow: none !important; margin-bottom: 25px !important; }
+        .jumbotron h4 { font-family: 'Klavika', sans-serif !important; font-weight: 600 !important; color: var(--text-main) !important; }
+        .jumbotron label { color: var(--text-main) !important; font-weight: 600 !important; }
 
         /* ==========================================
            MODERNIZAÇÃO DO HORÁRIO
@@ -361,10 +655,6 @@
         table.timetable td.period-middle-slot { border-top: none !important; border-bottom: none !important; }
         table.timetable td.period-last-slot { border-top: none !important; }
 
-        .jumbotron { width: 100% !important; box-sizing: border-box !important; background-color: var(--bg-hover) !important; border: 1px solid var(--border-color) !important; border-radius: 8px !important; padding: 20px !important; box-shadow: none !important; margin-bottom: 25px !important; }
-        .jumbotron h4 { font-family: 'Klavika', sans-serif !important; font-weight: 600 !important; color: var(--text-main) !important; }
-        .jumbotron label { color: var(--text-main) !important; font-weight: 600 !important; }
-
         table[style*="margin-left:5px"] { margin-top: 10px !important; width: 100% !important; background-color: var(--bg-hover) !important; border: 1px solid var(--border-color) !important; border-radius: 8px !important; padding: 15px !important; display: block !important; box-shadow: none !important; box-sizing: border-box !important; }
         table[style*="margin-left:5px"] td { padding: 6px 12px !important; color: var(--text-main) !important; background-color: transparent !important; border: none !important; font-family: 'Source Sans 3', sans-serif !important; font-size: 13px !important; }
         table[style*="margin-left:5px"] b { color: var(--accent-blue) !important; font-size: 14px !important; }
@@ -383,6 +673,79 @@
 
     function initUI() {
         if (currentTheme === 'dark' && document.body) { document.body.style.setProperty('opacity', '1', 'important'); }
+
+        // ==========================================
+        // DOM FIX: FENIX BROKEN HTML (Early closing div)
+        // ==========================================
+        const mainContainer = document.querySelector('main[role="main"]');
+        const mainWrapper = document.getElementById('main-content-wrapper');
+        if (mainContainer && mainWrapper) {
+            let sibling = mainWrapper.nextSibling;
+            while (sibling) {
+                let next = sibling.nextSibling;
+                mainWrapper.appendChild(sibling);
+                sibling = next;
+            }
+        }
+
+        // ==========================================
+        // UI MODERNIZATION: Pessoal & Espaços Cleaning
+        // ==========================================
+        
+        // Wrap data tables cleanly without overriding parent Bootstrap logic globally
+        const dataTables = document.querySelectorAll('#main-content-wrapper table.table, #main-content-wrapper table.tstyle2');
+        dataTables.forEach(table => {
+            if (!table.parentElement.classList.contains('table-responsive')) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'table-responsive';
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            }
+        });
+
+        // Remove commas from action links in the table
+        const actionCells = document.querySelectorAll('.tdclear');
+        actionCells.forEach(cell => {
+            Array.from(cell.childNodes).forEach(node => {
+                if (node.nodeType === 3) { // Text node
+                    node.nodeValue = node.nodeValue.replace(/,/g, '').trim();
+                }
+            });
+        });
+
+        // Replace ancient accept.gif checkmarks with sleek vector icons
+        const checkmarks = document.querySelectorAll('img[src*="accept.gif"]');
+        checkmarks.forEach(img => {
+            const icon = document.createElement('span');
+            icon.innerHTML = '✔';
+            icon.style.color = 'var(--accent-blue)';
+            icon.style.fontWeight = 'bold';
+            icon.style.fontSize = '16px';
+            img.replaceWith(icon);
+        });
+
+        // Replace raw text hyphens with softer em-dashes
+        const centerCells = document.querySelectorAll('td.acenter');
+        centerCells.forEach(cell => {
+            if (cell.innerHTML.trim() === '-') {
+                cell.innerHTML = '<span style="color: var(--text-muted); opacity: 0.5;">—</span>';
+            }
+        });
+
+        // Convert Glyphicon buttons (Eye / Dashboard) to Text Buttons (Pesquisa de Espaços)
+        const viewBtns = document.querySelectorAll('.btn.btn-default span.glyphicon-eye-open');
+        viewBtns.forEach(icon => {
+            const btn = icon.parentElement;
+            btn.innerHTML = isEN ? 'View' : 'Ver';
+            btn.removeAttribute('title');
+        });
+
+        const scheduleBtns = document.querySelectorAll('.btn.btn-default span.glyphicon-dashboard');
+        scheduleBtns.forEach(icon => {
+            const btn = icon.parentElement;
+            btn.innerHTML = isEN ? 'Schedule' : 'Horário';
+            btn.removeAttribute('title');
+        });
 
         const currentPath = window.location.pathname;
         const leftMenuLinks = document.querySelectorAll('nav#context .nav-pills > li > a');
@@ -468,31 +831,50 @@
             localStorage.setItem(themeStorageKey, savedTheme);
             location.reload();
         };
-        themeMenu.appendChild(toggleItem);
 
-        const disableItem = document.createElement('div');
-        disableItem.style.padding = '8px 12px';
-        disableItem.style.cursor = 'pointer';
-        disableItem.style.fontSize = '13px';
-        disableItem.style.color = '#e63946';
-        disableItem.style.fontWeight = '600';
-        disableItem.innerText = isEN ? 'Disable Script ⚡' : 'Desativar Script ⚡';
+        const modeOptions = [
+            { key: 'system', namePT: 'Sistema (Automático)', nameEN: 'System Default' },
+            { key: 'light', namePT: 'Modo Claro', nameEN: 'Light Mode' },
+            { key: 'dark', namePT: 'Modo Escuro', nameEN: 'Dark Mode' }
+        ];
 
-        disableItem.onmouseover = () => disableItem.style.backgroundColor = 'var(--bg-hover)';
-        disableItem.onmouseout = () => disableItem.style.backgroundColor = 'transparent';
+        modeOptions.forEach(mode => {
+            const item = document.createElement('div');
+            item.style.padding = '8px 12px';
+            item.style.cursor = 'pointer';
+            item.style.fontSize = '13px';
+            item.style.color = 'var(--text-main)';
+            item.style.display = 'flex';
+            item.style.alignItems = 'center';
+            if (savedTheme === mode.key) item.style.fontWeight = '700';
 
-        disableItem.onclick = (e) => {
-            e.stopPropagation();
-            localStorage.setItem(scriptEnabledKey, 'false');
-            location.reload();
-        };
-        themeMenu.appendChild(disableItem);
+            const checkSpan = document.createElement('span');
+            checkSpan.style.display = 'inline-block';
+            checkSpan.style.width = '16px';
+            checkSpan.style.color = 'var(--accent-blue)';
+            checkSpan.style.fontWeight = 'bold';
+            checkSpan.innerHTML = savedTheme === mode.key ? '✔' : '';
 
-        const separator = document.createElement('div');
-        separator.style.height = '1px';
-        separator.style.backgroundColor = 'var(--border-color)';
-        separator.style.margin = '4px 0';
-        themeMenu.appendChild(separator);
+            item.appendChild(checkSpan);
+            item.appendChild(document.createTextNode(isEN ? mode.nameEN : mode.namePT));
+
+            item.onmouseover = () => item.style.backgroundColor = 'var(--bg-hover)';
+            item.onmouseout = () => item.style.backgroundColor = 'transparent';
+
+            item.onclick = (e) => {
+                e.stopPropagation();
+                localStorage.setItem(themeStorageKey, mode.key);
+                location.reload();
+            };
+
+            themeMenu.appendChild(item);
+        });
+
+        const separator1 = document.createElement('div');
+        separator1.style.height = '1px';
+        separator1.style.backgroundColor = 'var(--border-color)';
+        separator1.style.margin = '4px 0';
+        themeMenu.appendChild(separator1);
 
         Object.keys(colorPalettes).forEach(key => {
             const item = document.createElement('div');
@@ -521,6 +903,30 @@
             item.onclick = () => { applyColor(key); themeMenu.style.display = 'none'; };
             themeMenu.appendChild(item);
         });
+
+        const separator2 = document.createElement('div');
+        separator2.style.height = '1px';
+        separator2.style.backgroundColor = 'var(--border-color)';
+        separator2.style.margin = '4px 0';
+        themeMenu.appendChild(separator2);
+
+        const disableItem = document.createElement('div');
+        disableItem.style.padding = '8px 12px';
+        disableItem.style.cursor = 'pointer';
+        disableItem.style.fontSize = '13px';
+        disableItem.style.color = '#e63946';
+        disableItem.style.fontWeight = '600';
+        disableItem.innerText = isEN ? 'Disable Script ⚡' : 'Desativar Script ⚡';
+
+        disableItem.onmouseover = () => disableItem.style.backgroundColor = 'var(--bg-hover)';
+        disableItem.onmouseout = () => disableItem.style.backgroundColor = 'transparent';
+
+        disableItem.onclick = (e) => {
+            e.stopPropagation();
+            localStorage.setItem(scriptEnabledKey, 'false');
+            location.reload();
+        };
+        themeMenu.appendChild(disableItem);
 
         themeBtn.onclick = (e) => { e.stopPropagation(); themeMenu.style.display = themeMenu.style.display === 'none' ? 'block' : 'none'; };
         document.addEventListener('click', () => { themeMenu.style.display = 'none'; });
@@ -566,6 +972,96 @@
 
             finalHeaderCluster.appendChild(logoutBtn);
         }
+
+        // ==========================================
+        // SLEEK WEEK SELECTOR INJECTION
+        // ==========================================
+        const weekForm = document.querySelector('form[action*="/student/consult/time-table"]');
+        if (weekForm) {
+            const container = weekForm.closest('.jumbotron');
+            if (container) {
+                // Remove clunky Bootstrap container, add ours
+                container.classList.remove('jumbotron');
+                container.classList.add('sleek-week-selector');
+
+                // Extract essential elements before clearing
+                const selectStart = weekForm.querySelector('select[name="weekStart"]');
+                const selectEnd = weekForm.querySelector('select[name="weekEnd"]');
+                const submitBtn = weekForm.querySelector('button[type="submit"]');
+                const checksum = weekForm.querySelector('input[name="_request_checksum_"]');
+
+                // Rebuild form as a flex row
+                weekForm.className = 'sleek-form-flex';
+                weekForm.innerHTML = ''; 
+                if (checksum) weekForm.appendChild(checksum);
+
+                const labelStart = document.createElement('span');
+                labelStart.innerText = isEN ? 'Weeks:' : 'Semanas:';
+                labelStart.className = 'sleek-label';
+
+                const separator = document.createElement('span');
+                separator.innerText = isEN ? 'to' : 'até';
+                separator.className = 'sleek-separator';
+
+                // Strip the bulky "Semana X" text to just "X" for a cleaner UI
+                [selectStart, selectEnd].forEach(sel => {
+                    if (sel) {
+                        sel.className = 'sleek-select';
+                        Array.from(sel.options).forEach(opt => {
+                            opt.text = opt.text.replace(/Semana /i, '').trim();
+                        });
+                    }
+                });
+
+                weekForm.appendChild(labelStart);
+                if (selectStart) weekForm.appendChild(selectStart);
+                weekForm.appendChild(separator);
+                if (selectEnd) weekForm.appendChild(selectEnd);
+
+                if (submitBtn) {
+                    submitBtn.className = 'cluster-btn';
+                    submitBtn.innerText = isEN ? 'Filter' : 'Filtrar';
+                    submitBtn.style.marginLeft = '10px';
+                    submitBtn.style.backgroundColor = 'var(--active-pill-bg)';
+                    submitBtn.style.color = 'var(--active-pill-text)';
+                    submitBtn.style.border = 'none';
+                    weekForm.appendChild(submitBtn);
+                }
+
+                // Destroy the old h4 "Semanas" title since we integrated it inline
+                const h4 = container.querySelector('h4');
+                if (h4) h4.remove();
+            }
+        }
+
+        // ==========================================
+        // MODERNIZE TITLES (Replace 1/2/3/4 tables)
+        // ==========================================
+        const oldTitleTables = document.querySelectorAll('table.mtop15');
+        oldTitleTables.forEach(table => {
+            const numSpan = table.querySelector('.emphasis-box');
+            const titleStrong = table.querySelector('td:nth-child(2) strong');
+
+            if (numSpan && titleStrong) {
+                const modernHeader = document.createElement('div');
+                modernHeader.className = 'modern-section-title';
+
+                const badge = document.createElement('div');
+                badge.className = 'modern-section-badge';
+                badge.innerText = numSpan.innerText.trim();
+
+                const text = document.createElement('h3');
+                text.className = 'modern-section-text';
+                text.innerText = titleStrong.innerText.trim();
+
+                modernHeader.appendChild(badge);
+                modernHeader.appendChild(text);
+
+                table.parentNode.insertBefore(modernHeader, table);
+                table.remove();
+            }
+        });
+
 
         // ==========================================
         // TIMETABLE MODIFICATIONS
